@@ -1,0 +1,68 @@
+# COMANDOS ÚTILES DEL PROYECTO DE LOGÍSTICA (EDA/CQRS)
+
+## 1. INFRAESTRUCTURA (DOCKER)
+Asegúrate de estar en la raíz de 'Proyecto final' para estos comandos.
+
+# Levantar todos los servicios (MySQL, RabbitMQ, MongoDB, Redis)
+docker-compose up -d
+
+# Detener todos los servicios
+docker-compose stop
+
+# Eliminar contenedores y volúmenes (Limpieza total)
+docker-compose down -v
+
+# --- PRUEBAS DE RESILIENCIA ---
+
+# Apagar/Encender RabbitMQ (Para probar el Outbox Job)
+docker stop rabbitmq-logistics
+docker start rabbitmq-logistics
+
+# Apagar/Encender Redis (Para probar el Fallback de Caché)
+docker stop redis-logistics
+docker start redis-logistics
+
+
+## 2. PRUEBAS DE API (COMMAND SERVICE - Puerto 8081)
+
+# Crear un nuevo Pedido
+curl --location 'http://localhost:8081/api/v1/orders' \
+--header 'Content-Type: application/json' \
+--data '{
+    "orderNumber": "ORD-123",
+    "customer": "Antonio Lopez",
+    "product": "PlayStation 5"
+}'
+
+# Actualizar Estado (SHIPPED / DELIVERED)
+# Nota: Cambiar el {id} por el ID numérico de la DB
+curl --location --request PATCH 'http://localhost:8081/api/v1/orders/1/status?newStatus=SHIPPED'
+
+
+## 3. PRUEBAS DE API (QUERY SERVICE - Puerto 8082)
+
+# Listar todos los pedidos (Desde MongoDB)
+curl --location 'http://localhost:8082/api/v1/queries/orders'
+
+# Obtener un pedido por ID (MongoDB + Redis Cache)
+# Nota: La primera vez va a Mongo, la segunda a Redis.
+curl --location 'http://localhost:8082/api/v1/queries/orders/1'
+
+
+## 4. BASE DE DATOS (CONSULTAS SQL)
+
+# Revisar mensajes pendientes en el Outbox
+SELECT id, payload, status FROM db_orders.messages WHERE status = 'PENDING';
+
+# Revisar mensajes ya procesados
+SELECT id, payload, status FROM db_orders.messages WHERE status = 'PROCESSED';
+
+
+## 5. GRADLE (BUILD/EJECUCIÓN)
+Estar dentro de la carpeta del microservicio (ms-logistics-command o query).
+
+# Limpiar y Construir
+./gradlew clean build
+
+# Ejecutar la aplicación
+./gradlew bootRun
