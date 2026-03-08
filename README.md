@@ -2,6 +2,22 @@
 
 Este proyecto demuestra una arquitectura de microservicios robusta utilizando **Coreografía de Sagas** para transacciones distribuidas y **CQRS** (Command Query Responsibility Segregation) para optimización de lectura.
 
+# 🎓 Proyecto Final: Levantar aplicación
+
+Si necesitas levantar el servicio puedes hacerlo ejecutando el docker-compose.yml, adicional a eso necesitaras crear un .env con los siguientes valores para el envio de correos:
+
+GMAIL_USERNAME=xxx@gmail.com
+GMAIL_APP_PASSWORD=12345xx
+NOTIFICATION_RECIPIENT_EMAIL=xxx@gmail.com
+
+para probar el caso de error o compensatorio, necesitas cambiar el valor de 
+// Simulating stock logic (always success for now, or random failure)
+boolean stockAvailable = true;
+de la linea 21 de ms-logistics-stock\src\main\java\pe\edu\galaxy\logistics\stock\listener\StockCommandListener.java
+
+y ejecutar:
+docker-compose up -d --build stock-mock 
+
 ## 🏗️ Arquitectura General
 
 El sistema está compuesto por 4 microservicios principales:
