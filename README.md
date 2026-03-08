@@ -108,4 +108,4 @@ Para evitar el problema de "Dual-Write" (cuando se guarda en DB pero falla el en
 - **MongoDB & Redis**: Para el modelo de lectura súper rápido.
 
 ---
-*Galaxy Training - Advanced Software Engineering 2024*
+*Galaxy Training - Advanced Software Engineering 2026*
